@@ -214,5 +214,33 @@ export default function Home() {
       setRemoveEther(zero);
     }
   };
-  
+  /**
+   * _getTokensAfterRemove: Calculates the amount of `Ether` and `CD` tokens
+   * that would be returned back to user after he removes `removeLPTokenWei` amount
+   * of LP tokens from the contract
+   */
+  const _getTokensAfterRemove = async (_removeLPTokens) => {
+    try {
+      const provider = await getProviderOrSigner();
+      // Convert the LP tokens entered by the user to a BigNumber
+      const removeLPTokenWei = utils.parseEther(_removeLPTokens);
+      // Get the Eth reserves within the exchange contract
+      const _ethBalance = await getEtherBalance(provider, null, true);
+      // get the crypto dev token reserves from the contract
+      const cryptoDevTokenReserve = await getReserveOfCDTokens(provider);
+      // call the getTokensAfterRemove from the utils folder
+      const { _removeEther, _removeCD } = await getTokensAfterRemove(
+        provider,
+        removeLPTokenWei,
+        _ethBalance,
+        cryptoDevTokenReserve
+      );
+      setRemoveEther(_removeEther);
+      setRemoveCD(_removeCD);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  /**** END ****/
 }
