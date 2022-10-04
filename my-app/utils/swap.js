@@ -95,4 +95,31 @@ export const swapTokens = async (
     );
   }
   await tx.wait();
+    const _swapTokens = async () => {
+      try {
+        // Convert the amount entered by the user to a BigNumber using the `parseEther` library from `ethers.js`
+        const swapAmountWei = utils.parseEther(swapAmount);
+        // Check if the user entered zero
+        // We are here using the `eq` method from BigNumber class in `ethers.js`
+        if (!swapAmountWei.eq(zero)) {
+          const signer = await getProviderOrSigner(true);
+          setLoading(true);
+          // Call the swapTokens function from the `utils` folder
+          await swapTokens(
+            signer,
+            swapAmountWei,
+            tokenToBeReceivedAfterSwap,
+            ethSelected
+          );
+          setLoading(false);
+          // Get all the updated amounts after the swap
+          await getAmounts();
+          setSwapAmount("");
+        }
+      } catch (err) {
+        console.error(err);
+        setLoading(false);
+        setSwapAmount("");
+      }
+    };
 };
